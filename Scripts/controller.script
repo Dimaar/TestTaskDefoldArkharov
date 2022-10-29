@@ -1,0 +1,44 @@
+playerColor = 0
+score = 0
+firstOpened = false
+--local waitForAll = 0
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("start") then
+		for i, id in ipairs(idsOfBombs) do
+			msg.post(id, "revial")
+		end
+		--msg.post("/cursor#cursor", "waitForHide")
+	end
+
+	if message_id == hash("hide") then
+		for i, id in ipairs(idsOfBombs) do
+			msg.post(id, "hide")
+		end
+		msg.post("/cursor#cursor", "takeInput")
+	end
+
+	if message_id == hash("endOfGame") then
+		msg.post("/cursor#cursor", "gameOver")
+		msg.post("/guiOfGame#guiBomber", "endOfGame")
+	end
+	
+	if message_id == hash("restart") then
+		msg.post("@system:", "reboot") -- Можно было на самом деле сделать иначе, не перезапуская
+	end
+
+	-- Ниже артефакты от попыток реализовать ожидание, однако как указано в Readme, 
+	--он упорно не хотел во время ожидания показывать на экране открытые кружки
+
+	--if message_id == hash("ended") then
+	--	waitForAll = waitForAll + 1
+	--	print(tostring(waitForAll))
+	--	if waitForAll == 100 then
+	--		for i, id in ipairs(idsOfBombs) do
+	--			msg.post(id, "hide")
+	--		end
+	--	end
+	--end
+	
+	
+end

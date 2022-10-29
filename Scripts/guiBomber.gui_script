@@ -1,0 +1,46 @@
+local state = false
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+
+	self.button = gui.get_node("button")
+	self.buttonText = gui.get_node("buttonText")
+	self.score = gui.get_node("score")
+	self.hideButton = gui.get_node("hideButton")
+	self.hideText = gui.get_node("hideText")
+	self.endOfGameB = gui.get_node("endOfGameB")
+	self.endOfGameText = gui.get_node("endOfGameText")
+
+	gui.set_enabled(self.hideButton, false)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("updateScore") then
+		gui.set_text(self.score, "Score " .. tostring(score))
+	end
+
+	if message_id == hash("endOfGame") then
+		gui.set_alpha(self.endOfGameB, 1.0)
+		gui.set_text(self.endOfGameText, "Game Over Your Score is " .. tostring(score))
+	end
+	
+end
+
+function on_input(self, action_id, action)
+	if action_id == hash("touch") and action.pressed and gui.pick_node(self.button, action.x, action.y) and not state then
+		gui.set_text(self.buttonText, "restart")
+		state = true
+		gui.set_enabled(self.hideButton, true)
+		msg.post("/controller#controller", "start")
+	elseif action_id == hash("touch") and action.pressed and gui.pick_node(self.button, action.x, action.y) and state then
+		gui.set_text(self.buttonText, "start")
+		state = false
+		msg.post("/controller#controller", "restart")
+	end
+
+	if action_id == hash("touch") and action.pressed and gui.pick_node(self.hideButton, action.x, action.y) then
+		msg.post("/controller#controller", "hide")
+		gui.set_enabled(self.hideButton, false)
+	end
+	
+end
